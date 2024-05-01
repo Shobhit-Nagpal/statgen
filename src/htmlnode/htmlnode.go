@@ -8,6 +8,8 @@ import (
 	"unicode"
 )
 
+type HTMLTag string
+
 type Node interface {
   ToString() string
   ToHTML() (string, error)
@@ -15,7 +17,6 @@ type Node interface {
 
 //HTMLNode
 
-type HTMLTag string
 
 type HTMLNode struct {
 	Tag      HTMLTag

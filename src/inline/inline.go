@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func TextNodeToHTMLNode(tn textnode.TextNode) (*htmlnode.LeafNode, error) {
+func TextNodeToHTMLNode(tn *textnode.TextNode) (*htmlnode.LeafNode, error) {
 	switch tn.TextType {
 	case md.TEXT_TYPE_TEXT:
 		return &htmlnode.LeafNode{htmlnode.HTMLNode{Value: tn.Text}}, nil

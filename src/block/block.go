@@ -1,7 +1,9 @@
 package block
 
 import (
+	"errors"
 	"regexp"
+	"statgen/src/htmlnode"
 	"strings"
 )
 
@@ -38,4 +40,64 @@ func BlockToBlockType(block string) string {
   } else {
     return BLOCK_TYPE_PARAGRAPH
   }
+}
+
+func MarkdownToHTMLNode(markdown string) (string, error) {
+  html := "<div>"
+
+  blocks := MarkdownToBlocks(markdown)
+  
+  for _, block := range blocks {
+    blockType := BlockToBlockType(block)
+    switch blockType {
+    case BLOCK_TYPE_HEADING:
+      heading, err := CreateHTMLHeading(block)
+      if err != nil {
+        return "", err
+      }
+
+      html += heading
+    case BLOCK_TYPE_PARAGRAPH:
+      p, err := CreateHTMLParagraph(block)
+      if err != nil {
+        return "", err
+      }
+
+      html += p
+    case BLOCK_TYPE_QUOTE:
+      quote, err := CreateHTMLQuote(block)
+      if err != nil {
+        return "", err
+      }
+
+      html += quote
+    case BLOCK_TYPE_CODE:
+      code, err := CreateHTMLCode(block)
+      if err != nil {
+        return "", err
+      }
+
+      html += code
+    case BLOCK_TYPE_UNORDERED_LIST:
+     ul, err := CreateHTMLCode(block)
+      if err != nil {
+        return "", err
+      }
+
+      html += ul
+    case BLOCK_TYPE_ORDERED_LIST:
+     ol, err := CreateHTMLCode(block)
+      if err != nil {
+        return "", err
+      }
+
+      html += ol
+    default:
+      return "", errors.New("Block type not recognized")
+    }
+  }
+
+  html += "</div>"
+
+  return html, nil
 }
