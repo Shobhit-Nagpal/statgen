@@ -9,8 +9,8 @@ func TestPropToHTML(t *testing.T) {
 		"href": "https://www.google.com",
 	}
 
-	node := &HTMLNode{tag: "p", value: "This is a paragraph", children: []Node{}, props: props}
-	attr := node.propsToHTML()
+	node := &HTMLNode{Tag: "p", Value: "This is a paragraph", Children: []Node{}, Props: props}
+	attr := node.PropsToHTML()
 	expected := "href='https://www.google.com'"
 
 	if attr == expected {
@@ -27,8 +27,8 @@ func TestPropsToHTML(t *testing.T) {
 		"class":  "para",
 	}
 
-	node := &HTMLNode{tag: "p", value: "This is a paragraph", children: []Node{}, props: props}
-	attr := node.propsToHTML()
+	node := &HTMLNode{Tag: "p", Value: "This is a paragraph", Children: []Node{}, Props: props}
+	attr := node.PropsToHTML()
 	expected := "class='para' href='https://www.google.com' target='_blank'"
 
 	if attr == expected {
@@ -45,8 +45,8 @@ func TestPropsToHTMLHeading(t *testing.T) {
 		"class":  "heading another-one",
 	}
 
-	node := &HTMLNode{tag: "h1", value: "This is a paragraph", children: []Node{}, props: props}
-	attr := node.propsToHTML()
+	node := &HTMLNode{Tag: "h1", Value: "This is a paragraph", Children: []Node{}, Props: props}
+	attr := node.PropsToHTML()
 	expected := "class='heading another-one' href='https://www.google.com' target='_blank'"
 
 	if attr == expected {
@@ -60,24 +60,24 @@ func TestToString(t *testing.T) {
 	props := map[string]string{
 		"href": "https://www.google.com",
 	}
-	node := HTMLNode{tag: "h1", value: "This is a paragraph", children: []Node{}, props: props}
+	node := HTMLNode{Tag: "h1", Value: "This is a paragraph", Children: []Node{}, Props: props}
 
 	expected := "HTMLNode(h1, This is a paragraph, [], map[href:https://www.google.com])"
 
-	if node.toString() == expected {
+	if node.ToString() == expected {
 		return
 	}
 
-	t.Errorf("String values don't match. Expcted: %s, Got: %s", expected, node.toString())
+	t.Errorf("String values don't match. Expcted: %s, Got: %s", expected, node.ToString())
 }
 
 func TestLeafNode(t *testing.T) {
-	node := &LeafNode{HTMLNode{tag: "a", value: "Just text, fam"}}
+	node := &LeafNode{HTMLNode{Tag: "a", Value: "Just text, fam"}}
 	expected := "<a>Just text, fam</a>"
 
-	value, err := node.toHTML()
+	value, err := node.ToHTML()
 	if err != nil {
-		t.Errorf("String values don't match. Expcted: %s, Got: %s", expected, node.toString())
+		t.Errorf("String values don't match. Expcted: %s, Got: %s", expected, node.ToString())
 	}
 
 	if value == expected {
@@ -94,10 +94,10 @@ func TestLeafNodeWithProps(t *testing.T) {
 		"class": "anchor",
 	}
 
-	node := &LeafNode{HTMLNode{tag: "a", value: "Just text, fam", props: props}}
+	node := &LeafNode{HTMLNode{Tag: "a", Value: "Just text, fam", Props: props}}
 	expected := "<a class='anchor' href='https://www.google.com' id='random'>Just text, fam</a>"
 
-	value, err := node.toHTML()
+	value, err := node.ToHTML()
 	if err != nil {
 		t.Errorf("String values don't match. Expcted: %s, Got: %s", expected, value)
 	}
@@ -110,10 +110,10 @@ func TestLeafNodeWithProps(t *testing.T) {
 }
 
 func TestLeafNodeWithoutTag(t *testing.T) {
-	node := &LeafNode{HTMLNode{value: "Just text, fam"}}
+	node := &LeafNode{HTMLNode{Value: "Just text, fam"}}
 	expected := "Just text, fam"
 
-	value, err := node.toHTML()
+	value, err := node.ToHTML()
 	if err != nil {
 		t.Errorf("String values don't match. Expcted: %s, Got: %s", expected, value)
 	}
@@ -126,15 +126,15 @@ func TestLeafNodeWithoutTag(t *testing.T) {
 }
 
 func TestLeafNodeWithoutValue(t *testing.T) {
-	node := &LeafNode{HTMLNode{tag: "a"}}
+	node := &LeafNode{HTMLNode{Tag: "a"}}
 	expected := "Leaf node does not have value"
 
-	_, err := node.toHTML()
+	_, err := node.ToHTML()
 	if err.Error() == expected {
 		return
 	}
 
-	t.Errorf("Leaf node without props does not give expected error. Expected: %s, Got: %s", expected, err.Error())
+	t.Errorf("Leaf node without Props does not give expected error. Expected: %s, Got: %s", expected, err.Error())
 }
 
 func TestParentNode(t *testing.T) {
@@ -144,15 +144,15 @@ func TestParentNode(t *testing.T) {
 		"class": "anchor",
 	}
 
-	leaf1 := &LeafNode{HTMLNode{value: "Just text, fam"}}
-	leaf2 := &LeafNode{HTMLNode{tag: "a", value: "Just text, fam", props: props}}
+	leaf1 := &LeafNode{HTMLNode{Value: "Just text, fam"}}
+	leaf2 := &LeafNode{HTMLNode{Tag: "a", Value: "Just text, fam", Props: props}}
 
-	node := &ParentNode{HTMLNode{tag: "div", children: []Node{leaf1, leaf2}}}
+	node := &ParentNode{HTMLNode{Tag: "div", Children: []Node{leaf1, leaf2}}}
 	expected := "<div>Just text, fam<a class='anchor' href='https://www.google.com' id='random'>Just text, fam</a></div>"
 
-	value, err := node.toHTML()
+	value, err := node.ToHTML()
 	if err != nil {
-		t.Errorf("String values don't match. Expected: %s, Got: %s", expected, node.toString())
+		t.Errorf("String values don't match. Expected: %s, Got: %s", expected, node.ToString())
 	}
 
 	if value == expected {
@@ -169,13 +169,13 @@ func TestParentNodeWithProps(t *testing.T) {
 		"class": "anchor",
 	}
 
-	leaf1 := &LeafNode{HTMLNode{value: "Just text, fam"}}
-	node := &ParentNode{HTMLNode{tag: "a", children: []Node{leaf1}, props: props}}
+	leaf1 := &LeafNode{HTMLNode{Value: "Just text, fam"}}
+	node := &ParentNode{HTMLNode{Tag: "a", Children: []Node{leaf1}, Props: props}}
 	expected := "<a class='anchor' href='https://www.google.com' id='random'>Just text, fam</a>"
 
-	value, err := node.toHTML()
+	value, err := node.ToHTML()
 	if err != nil {
-		t.Errorf("String values don't match. Expcted: %s, Got: %s", expected, node.toString())
+		t.Errorf("String values don't match. Expcted: %s, Got: %s", expected, node.ToString())
 	}
 
 	if value == expected {
@@ -186,40 +186,40 @@ func TestParentNodeWithProps(t *testing.T) {
 }
 
 func TestParentNodeWithoutTag(t *testing.T) {
-	leaf1 := &LeafNode{HTMLNode{value: "Just text, fam"}}
-	node := &ParentNode{HTMLNode{children: []Node{leaf1}}}
-	expected := "Parent node does not have a tag"
+	leaf1 := &LeafNode{HTMLNode{Value: "Just text, fam"}}
+	node := &ParentNode{HTMLNode{Children: []Node{leaf1}}}
+	expected := "Parent node does not have a Tag"
 
-	_, err := node.toHTML()
+	_, err := node.ToHTML()
 	if err.Error() == expected {
     return
 	}
 
-	t.Errorf("Parent node without tag does not give expected error. Expected: %s, Got: %s", expected, err.Error())
+	t.Errorf("Parent node without Tag does not give expected error. Expected: %s, Got: %s", expected, err.Error())
 }
 
 
 func TestNestedParentNode(t *testing.T) {
-  leafh1 := &LeafNode{HTMLNode{tag: "h1", value: "Heading 1"}}
-  leafh2 := &LeafNode{HTMLNode{tag: "h2", value: "Heading 2"}}
-  p1 := &LeafNode{HTMLNode{tag: "p", value: "Paragraph 1"}}
-  divP := &LeafNode{HTMLNode{tag: "p", value: "Complex content", props: map[string]string{"class": "new", "id": "unique"}}}
-  articleDiv := &ParentNode{HTMLNode{tag: "div", children: []Node{divP}}}
-  boldLi := &LeafNode{HTMLNode{tag: "b", value: "Bold text"}}
-  italicLi := &LeafNode{HTMLNode{tag: "i", value: "Italic text"}}
-  codeLi := &LeafNode{HTMLNode{tag: "code", value: "print('Hello, World!')"}}
-  li1 := &ParentNode{HTMLNode{tag: "li", children: []Node{boldLi, italicLi}}}
-  li2 := &ParentNode{HTMLNode{tag: "li", children: []Node{codeLi}}}
-  ul := &ParentNode{HTMLNode{tag: "ul", children: []Node{li1, li2}}}
-  article := &ParentNode{HTMLNode{tag: "article", children: []Node{p1, ul, articleDiv}}}
-  section := &ParentNode{HTMLNode{tag: "section", children: []Node{leafh2, article}}}
-  footerP := &LeafNode{HTMLNode{tag: "p", value: "Footer text"}}
-  footer := &ParentNode{HTMLNode{tag: "footer", children: []Node{footerP}}}
-  node := &ParentNode{HTMLNode{tag: "div", children: []Node{leafh1, section, footer}}}
+  leafh1 := &LeafNode{HTMLNode{Tag: "h1", Value: "Heading 1"}}
+  leafh2 := &LeafNode{HTMLNode{Tag: "h2", Value: "Heading 2"}}
+  p1 := &LeafNode{HTMLNode{Tag: "p", Value: "Paragraph 1"}}
+  divP := &LeafNode{HTMLNode{Tag: "p", Value: "Complex content", Props: map[string]string{"class": "new", "id": "unique"}}}
+  articleDiv := &ParentNode{HTMLNode{Tag: "div", Children: []Node{divP}}}
+  boldLi := &LeafNode{HTMLNode{Tag: "b", Value: "Bold text"}}
+  italicLi := &LeafNode{HTMLNode{Tag: "i", Value: "Italic text"}}
+  codeLi := &LeafNode{HTMLNode{Tag: "code", Value: "print('Hello, World!')"}}
+  li1 := &ParentNode{HTMLNode{Tag: "li", Children: []Node{boldLi, italicLi}}}
+  li2 := &ParentNode{HTMLNode{Tag: "li", Children: []Node{codeLi}}}
+  ul := &ParentNode{HTMLNode{Tag: "ul", Children: []Node{li1, li2}}}
+  article := &ParentNode{HTMLNode{Tag: "article", Children: []Node{p1, ul, articleDiv}}}
+  section := &ParentNode{HTMLNode{Tag: "section", Children: []Node{leafh2, article}}}
+  footerP := &LeafNode{HTMLNode{Tag: "p", Value: "Footer text"}}
+  footer := &ParentNode{HTMLNode{Tag: "footer", Children: []Node{footerP}}}
+  node := &ParentNode{HTMLNode{Tag: "div", Children: []Node{leafh1, section, footer}}}
 
   expected := "<div><h1>Heading 1</h1><section><h2>Heading 2</h2><article><p>Paragraph 1</p><ul><li><b>Bold text</b><i>Italic text</i></li><li><code>print('Hello, World!')</code></li></ul><div><p class='new' id='unique'>Complex content</p></div></article></section><footer><p>Footer text</p></footer></div>"
 
-  value, err := node.toHTML()
+  value, err := node.ToHTML()
 	if err != nil {
 		t.Errorf("String values don't match. Expcted: %s, Got: %s", expected, value)
 	}

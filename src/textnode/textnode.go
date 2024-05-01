@@ -3,17 +3,17 @@ package textnode
 import "fmt"
 
 type TextNode struct {
-  text string
-  textType string
-  url string
+  Text string
+  TextType string
+  Url string
 }
 
-func (t *TextNode) toString() string {
-  return fmt.Sprintf("TextNode(%s, %s, %s)", t.text, t.textType, t.url)
+func (t *TextNode) ToString() string {
+  return fmt.Sprintf("TextNode(%s, %s, %s)", t.Text, t.TextType, t.Url)
 }
 
-func (t *TextNode) isEqual(tn TextNode) bool {
-  if t.text == tn.text && t.textType == tn.textType && t.url == tn.url {
+func (t *TextNode) IsEqual(tn *TextNode) bool {
+  if t.Text == tn.Text && t.TextType == tn.TextType && t.Url == tn.Url {
     return true
   }
   return false

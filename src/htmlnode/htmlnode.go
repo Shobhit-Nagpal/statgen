@@ -9,8 +9,8 @@ import (
 )
 
 type Node interface {
-  toString() string
-  toHTML() (string, error)
+  ToString() string
+  ToHTML() (string, error)
 }
 
 //HTMLNode
@@ -18,31 +18,31 @@ type Node interface {
 type HTMLTag string
 
 type HTMLNode struct {
-	tag      HTMLTag
-	value    string
-	children []Node
-	props    map[string]string
+	Tag      HTMLTag
+	Value    string
+	Children []Node
+	Props    map[string]string
 }
 
-func (h *HTMLNode) toHTML() (string, error) {
+func (h *HTMLNode) ToHTML() (string, error) {
 	return "", errors.New("Not implemented")
 }
 
-func (h *HTMLNode) propsToHTML() string {
-	if len(h.props) == 0 {
+func (h *HTMLNode) PropsToHTML() string {
+	if len(h.Props) == 0 {
 		return ""
 	}
 
-  keys := make([]string, 0, len(h.props))
+  keys := make([]string, 0, len(h.Props))
 
-  for k := range h.props {
+  for k := range h.Props {
     keys = append(keys, k)
   }
   sort.Strings(keys)
 
 	htmlAttr := ""
 	for _, key := range keys {
-		htmlAttr += fmt.Sprintf("%s='%s' ", key, h.props[key])
+		htmlAttr += fmt.Sprintf("%s='%s' ", key, h.Props[key])
 	}
 
 	htmlAttr = strings.TrimRightFunc(htmlAttr, unicode.IsSpace)
@@ -50,8 +50,8 @@ func (h *HTMLNode) propsToHTML() string {
 	return htmlAttr
 }
 
-func (h *HTMLNode) toString() string {
-	return fmt.Sprintf("HTMLNode(%s, %s, %s, %s)", h.tag, h.value, h.children, h.props)
+func (h *HTMLNode) ToString() string {
+	return fmt.Sprintf("HTMLNode(%s, %s, %s, %s)", h.Tag, h.Value, h.Children, h.Props)
 }
 
 
@@ -61,25 +61,25 @@ type LeafNode struct {
   HTMLNode
 }
 
-func (l *LeafNode) toString() string {
-  return fmt.Sprintf("LeafNode(%s, %s, %s, %s)", l.tag, l.value, l.children, l.props)
+func (l *LeafNode) ToString() string {
+  return fmt.Sprintf("LeafNode(%s, %s, %s, %s)", l.Tag, l.Value, l.Children, l.Props)
 }
 
-func (l *LeafNode) toHTML() (string, error) {
-  if l.value == "" {
+func (l *LeafNode) ToHTML() (string, error) {
+  if l.Value == "" {
     return "", errors.New("Leaf node does not have value")
   }
 
-  if l.tag == "" {
-    return l.value, nil
+  if l.Tag == "" {
+    return l.Value, nil
   }
 
-  props := l.propsToHTML()
+  props := l.PropsToHTML()
   if props != "" {
-    return fmt.Sprintf("<%s %s>%s</%s>", l.tag, props, l.value, l.tag), nil
+    return fmt.Sprintf("<%s %s>%s</%s>", l.Tag, props, l.Value, l.Tag), nil
   }
 
-  return fmt.Sprintf("<%s>%s</%s>", l.tag, l.value, l.tag), nil
+  return fmt.Sprintf("<%s>%s</%s>", l.Tag, l.Value, l.Tag), nil
 }
 
 
@@ -91,32 +91,32 @@ type ParentNode struct {
 
 
 func (p *ParentNode) toString() string {
-  return fmt.Sprintf("ParentNode(%s, %s, %s, %s)", p.tag, p.value, p.children, p.props)
+  return fmt.Sprintf("ParentNode(%s, %s, %s, %s)", p.Tag, p.Value, p.Children, p.Props)
 }
 
 
-func (p *ParentNode) toHTML() (string, error) {
-  if p.tag == "" {
-    return "", errors.New("Parent node does not have a tag")
+func (p *ParentNode) ToHTML() (string, error) {
+  if p.Tag == "" {
+    return "", errors.New("Parent node does not have a Tag")
   }
 
-  if len(p.children) == 0 {
-    return "", errors.New("Parent node does not have children")
+  if len(p.Children) == 0 {
+    return "", errors.New("Parent node does not have Children")
   }
 
   childNodes := ""
-  for _, child := range p.children {
-    childHTML, err := child.toHTML()
+  for _, child := range p.Children {
+    childHTML, err := child.ToHTML()
     if err != nil {
       return "", err
     }
     childNodes += childHTML
   }
 
-  props := p.propsToHTML()
+  props := p.PropsToHTML()
   if props != "" {
-    return fmt.Sprintf("<%s %s>%s</%s>", p.tag, props, childNodes, p.tag), nil
+    return fmt.Sprintf("<%s %s>%s</%s>", p.Tag, props, childNodes, p.Tag), nil
   }
 
-  return fmt.Sprintf("<%s>%s</%s>", p.tag, childNodes, p.tag), nil
+  return fmt.Sprintf("<%s>%s</%s>", p.Tag, childNodes, p.Tag), nil
 }
