@@ -137,3 +137,51 @@ func TestExtractMarkdownLinks(t *testing.T) {
   }
 
 }
+
+func TestSplitNodeImages(t *testing.T) {
+  node := &textnode.TextNode{Text: "This is text with an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and another ![second image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png)", TextType: md.TEXT_TYPE_TEXT}
+
+  expected := []*textnode.TextNode{
+    &textnode.TextNode{Text: "This is text with an ", TextType: md.TEXT_TYPE_TEXT},
+    &textnode.TextNode{Text: "image", TextType: md.TEXT_TYPE_IMAGE, Url: "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"},
+    &textnode.TextNode{Text: " and another ", TextType: md.TEXT_TYPE_TEXT},
+    &textnode.TextNode{Text: "second image", TextType: md.TEXT_TYPE_IMAGE, Url: "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png"},
+  }
+
+  splitNodes, err := SplitNodesImage([]*textnode.TextNode{node})
+  if err != nil {
+    t.Errorf(err.Error())
+  }
+
+  for idx, txtNode := range expected {
+    if txtNode.IsEqual(splitNodes[idx]) {
+      continue
+    } else {
+      t.Errorf("Text nodes are not the same. Expected: %s, Got: %s", txtNode.ToString(), splitNodes[idx].ToString())
+    }
+  }
+}
+
+func TestSplitNodeLinks(t *testing.T) {
+  node := &textnode.TextNode{Text: "This is text with a [link](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and another [second link](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png)", TextType: md.TEXT_TYPE_TEXT}
+
+  expected := []*textnode.TextNode{
+    &textnode.TextNode{Text: "This is text with a ", TextType: md.TEXT_TYPE_TEXT},
+    &textnode.TextNode{Text: "link", TextType: md.TEXT_TYPE_LINK, Url: "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"},
+    &textnode.TextNode{Text: " and another ", TextType: md.TEXT_TYPE_TEXT},
+    &textnode.TextNode{Text: "second link", TextType: md.TEXT_TYPE_LINK, Url: "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png"},
+  }
+
+  splitNodes, err := SplitNodesLink([]*textnode.TextNode{node})
+  if err != nil {
+    t.Errorf(err.Error())
+  }
+
+  for idx, txtNode := range expected {
+    if txtNode.IsEqual(splitNodes[idx]) {
+      continue
+    } else {
+      t.Errorf("Text nodes are not the same. Expected: %s, Got: %s", txtNode.ToString(), splitNodes[idx].ToString())
+    }
+  }
+}
