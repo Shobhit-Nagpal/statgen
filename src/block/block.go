@@ -3,7 +3,6 @@ package block
 import (
 	"errors"
 	"regexp"
-	"statgen/src/htmlnode"
 	"strings"
 )
 

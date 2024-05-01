@@ -45,7 +45,7 @@ func CreateHTMLHeading(block string) (string, error) {
 		headingValue += leafHTML
 	}
 
-	heading := fmt.Sprintf("<%s>%s</%s>", headingNumber, headingValue, headingNumber)
+	heading := fmt.Sprintf("<h%d>%s</h%d>", headingNumber, headingValue, headingNumber)
 	return heading, nil
 }
 
