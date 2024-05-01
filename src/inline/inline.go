@@ -2,11 +2,13 @@ package inline
 
 import (
 	"errors"
+	"regexp"
 	"statgen/src/htmlnode"
 	"statgen/src/md"
 	"statgen/src/textnode"
 	"strings"
 )
+
 
 func TextNodeToHTMLNode(tn textnode.TextNode) (*htmlnode.LeafNode, error) {
 	switch tn.TextType {
@@ -38,12 +40,12 @@ func SplitNodesDelimiter(oldNodes []*textnode.TextNode, delimiter, textType stri
 
 		strs := strings.Split(node.Text, delimiter)
 
-		if len(strs) % 2 == 0 {
+		if len(strs)%2 == 0 {
 			return nil, errors.New("Invalid Markdown syntax")
 		}
 
 		for idx, str := range strs {
-			if idx % 2 == 0 {
+			if idx%2 == 0 {
 				textNodes = append(textNodes, &textnode.TextNode{Text: str, TextType: md.TEXT_TYPE_TEXT})
 				continue
 			}
@@ -53,4 +55,45 @@ func SplitNodesDelimiter(oldNodes []*textnode.TextNode, delimiter, textType stri
 	}
 
 	return textNodes, nil
+}
+
+func ExtractMarkdownImages(text string) []md.MarkdownImage {
+	mdImages := []md.MarkdownImage{}
+
+	re := regexp.MustCompile(`!\[(.*?)\]\((.*?)\)`)
+  textRe := regexp.MustCompile(`!\[(.*?)\]`)
+  urlRe := regexp.MustCompile(`\((.*?)\)`)
+
+	images := re.FindAllString(text, -1)
+
+	for _, image := range images {
+    img := md.MarkdownImage{} 
+    imageText := textRe.FindAllString(image, 1)[0]
+    imageUrl := urlRe.FindAllString(image, 1)[0]
+    img.Text = strings.Trim(imageText, "![]")
+    img.Url = strings.Trim(imageUrl, "()")
+    mdImages = append(mdImages, img)
+	}
+
+	return mdImages
+}
+
+func ExtractMarkdownLinks(text string) []md.MarkdownLink {
+  mdLinks := []md.MarkdownLink{}
+
+	re := regexp.MustCompile(`\[(.*?)\]\((.*?)\)`)
+  textRe := regexp.MustCompile(`\[(.*?)\]`)
+  urlRe := regexp.MustCompile(`\((.*?)\)`)
+
+	links := re.FindAllString(text, -1)
+
+	for _, link := range links {
+    lnk := md.MarkdownLink{} 
+    lnkText := textRe.FindAllString(link, 1)[0]
+    lnkUrl := urlRe.FindAllString(link, 1)[0]
+    lnk.Text = strings.Trim(lnkText, "![]")
+    lnk.Url = strings.Trim(lnkUrl, "()")
+    mdLinks = append(mdLinks, lnk)
+	}
+	return mdLinks
 }

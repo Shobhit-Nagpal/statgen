@@ -99,3 +99,41 @@ func TestSplitMultipleBoldDelimiter(t *testing.T) {
     }
   }
 }
+
+func TestExtractMarkdownImages(t *testing.T) {
+  text := "This is text with an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and ![another](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png)"
+  images := ExtractMarkdownImages(text)
+
+  expected := []md.MarkdownImage{
+    md.MarkdownImage{Text: "image", Url: "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"},
+    md.MarkdownImage{Text: "another", Url: "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png"},
+  }
+
+  for idx, img := range expected {
+    if img.IsEqual(images[idx]) {
+      continue
+    } else {
+      t.Errorf("Images are not the same. Expected: %s, Got: %s", img.ToString(), images[idx].ToString())
+    }
+  }
+}
+
+
+func TestExtractMarkdownLinks(t *testing.T) {
+  text := "This is text with an [link](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and ![another](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png)"
+  links := ExtractMarkdownLinks(text)
+
+  expected := []md.MarkdownLink{
+    md.MarkdownLink{Text: "link", Url: "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"},
+    md.MarkdownLink{Text: "another", Url: "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png"},
+  }
+
+  for idx, link := range expected {
+    if link.IsEqual(links[idx]) {
+      continue
+    } else {
+      t.Errorf("Links are not the same. Expected: %s, Got: %s", link.ToString(), links[idx].ToString())
+    }
+  }
+
+}
