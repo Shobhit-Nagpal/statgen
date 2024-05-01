@@ -1,6 +1,10 @@
 package block
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
+
 
 func MarkdownToBlocks(markdown string) []string {
   blocks := []string{}
@@ -12,4 +16,26 @@ func MarkdownToBlocks(markdown string) []string {
     }
   }
   return blocks
+}
+
+func BlockToBlockType(block string) string {
+  headingRe := regexp.MustCompile(`^##?#?#?#?#?\s.*$`)
+  quoteRe := regexp.MustCompile(`(?m:^>.*?$)`)
+  ulRe := regexp.MustCompile(`(?m:^[*-]\s.*?$)`)
+  olRe := regexp.MustCompile(`(?m:^(1|[2-9]\d*)\.\s.*?$)`)
+  codeRe := regexp.MustCompile("^```[\\s\\S]*?```$")
+
+  if headingRe.MatchString(block) {
+    return BLOCK_TYPE_HEADING
+  } else if quoteRe.MatchString(block) {
+    return BLOCK_TYPE_QUOTE
+  } else if ulRe.MatchString(block) {
+    return BLOCK_TYPE_UNORDERED_LIST
+  } else if olRe.MatchString(block) {
+    return BLOCK_TYPE_ORDERED_LIST
+  } else if codeRe.MatchString(block) {
+    return BLOCK_TYPE_CODE
+  } else {
+    return BLOCK_TYPE_PARAGRAPH
+  }
 }

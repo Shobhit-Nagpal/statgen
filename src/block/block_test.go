@@ -71,3 +71,73 @@ This is the same paragraph on a new line
 		}
 	}
 }
+
+func TestBlockToBlockTypeHeading(t *testing.T) {
+  text := "## Heading 2"
+  blockType := BlockToBlockType(text)
+
+  if blockType == BLOCK_TYPE_HEADING {
+    return
+  }
+
+  t.Errorf("Block type not same. Expected: %s, Got: %s", BLOCK_TYPE_HEADING, blockType)
+}
+
+func TestBlockToBlockTypeParagraph(t *testing.T) {
+  text := "Classic paragraph"
+  blockType := BlockToBlockType(text)
+
+  if blockType == BLOCK_TYPE_PARAGRAPH {
+    return
+  }
+
+  t.Errorf("Block type not same. Expected: %s, Got: %s", BLOCK_TYPE_PARAGRAPH, blockType)
+}
+
+func TestBlockToBlockTypeQuote(t *testing.T) {
+  text := ">This is a whole quote\n> - Socrates probably\n> Who knows ackshually"
+
+  blockType := BlockToBlockType(text)
+
+  if blockType == BLOCK_TYPE_QUOTE {
+    return
+  }
+
+  t.Errorf("Block type not same. Expected: %s, Got: %s", BLOCK_TYPE_QUOTE, blockType)
+}
+
+func TestBlockToBlockTypeUnorderedList(t *testing.T) {
+  text := "- Brocolli\n- Onion"
+
+  blockType := BlockToBlockType(text)
+
+  if blockType == BLOCK_TYPE_UNORDERED_LIST {
+    return
+  }
+
+  t.Errorf("Block type not same. Expected: %s, Got: %s", BLOCK_TYPE_UNORDERED_LIST, blockType)
+}
+
+func TestBlockToBlockTypeOrderedList(t *testing.T) {
+  text := "1. Brocolli\n2. Onion"
+
+  blockType := BlockToBlockType(text)
+
+  if blockType == BLOCK_TYPE_ORDERED_LIST {
+    return
+  }
+
+  t.Errorf("Block type not same. Expected: %s, Got: %s", BLOCK_TYPE_ORDERED_LIST, blockType)
+}
+
+func TestBlockToBlockTypeCode(t *testing.T) {
+  text := "```print('Checkmate')\nprint('Gottem')```"
+
+  blockType := BlockToBlockType(text)
+
+  if blockType == BLOCK_TYPE_CODE {
+    return
+  }
+
+  t.Errorf("Block type not same. Expected: %s, Got: %s", BLOCK_TYPE_CODE, blockType)
+}
