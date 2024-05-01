@@ -185,3 +185,32 @@ func TestSplitNodeLinks(t *testing.T) {
     }
   }
 }
+
+func TestTextToTextNodes(t *testing.T) {
+  text := "This is **text** with an *italic* word and a `code block` and an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and a [link](https://boot.dev)"
+  expected := []*textnode.TextNode{
+    &textnode.TextNode{Text: "This is ", TextType: md.TEXT_TYPE_TEXT},
+    &textnode.TextNode{Text: "text", TextType: md.TEXT_TYPE_BOLD},
+    &textnode.TextNode{Text: " with an ", TextType: md.TEXT_TYPE_TEXT},
+    &textnode.TextNode{Text: "italic", TextType: md.TEXT_TYPE_ITALIC},
+    &textnode.TextNode{Text: " word and a ", TextType: md.TEXT_TYPE_TEXT},
+    &textnode.TextNode{Text: "code block", TextType: md.TEXT_TYPE_CODE},
+    &textnode.TextNode{Text: " and an ", TextType: md.TEXT_TYPE_TEXT},
+    &textnode.TextNode{Text: "image", TextType: md.TEXT_TYPE_IMAGE, Url: "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"},
+    &textnode.TextNode{Text: " and a ", TextType: md.TEXT_TYPE_TEXT},
+    &textnode.TextNode{Text: "link", TextType: md.TEXT_TYPE_LINK, Url: "https://boot.dev"},
+  }
+
+  textNodes, err := TextToTextNodes(text)
+  if err != nil {
+    t.Errorf(err.Error())
+  }
+
+  for idx, node := range expected {
+    if node.IsEqual(textNodes[idx]) {
+      continue
+    } else {
+      t.Errorf("Text nodes are not the same. Expected: %s, Got: %s", node.ToString(), textNodes[idx].ToString())
+    }
+  }
+}

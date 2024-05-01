@@ -181,3 +181,32 @@ func SplitNodesLink(nodes []*textnode.TextNode) ([]*textnode.TextNode, error) {
 
 	return newNodes, nil
 }
+
+func TextToTextNodes(text string) ([]*textnode.TextNode, error) {
+  newNodes, err := SplitNodesDelimiter([]*textnode.TextNode{&textnode.TextNode{Text: text, TextType: md.TEXT_TYPE_TEXT}}, "**", md.TEXT_TYPE_BOLD)
+  if err != nil {
+    return nil, err
+  }
+
+
+  newNodes, err = SplitNodesDelimiter(newNodes, "*", md.TEXT_TYPE_ITALIC)
+  if err != nil {
+    return nil, err
+  }
+
+  newNodes, err = SplitNodesDelimiter(newNodes, "`", md.TEXT_TYPE_CODE)
+  if err != nil {
+    return nil, err
+  }
+
+  newNodes, err = SplitNodesImage(newNodes)
+  if err != nil {
+    return nil, err
+  }
+
+  newNodes, err = SplitNodesLink(newNodes)
+  if err != nil {
+    return nil, err
+  }
+  return newNodes, nil
+}
