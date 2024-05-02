@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"path/filepath"
 	"statgen/src/block"
 	"statgen/src/server"
 	"strings"
@@ -162,6 +163,44 @@ func generatePage(fromPath, templatePath, destPath string) {
   }
 }
 
+func generatePagesRecursive(contentDirPath, templatePath, destDirPath string) {
+  contentDir, err := os.Stat(contentDirPath)
+  if err != nil {
+    fmt.Fprintf(os.Stderr, fmt.Sprintf("Error regarding %s: %s\n\n", contentDirPath, err.Error()))
+  }
+
+  if os.IsNotExist(err) {
+    fmt.Fprintf(os.Stderr, fmt.Sprintf("%s directory does not exist", contentDir))
+    os.Exit(1)
+  }
+
+  contentDirContents, err := os.ReadDir(contentDirPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, fmt.Sprintf("Error reading directory %s's contents: %s\n\n", contentDirPath, err.Error()))
+		os.Exit(1)
+	}
+
+  for _, contentDirContent := range contentDirContents {
+    if contentDirContent.IsDir() {
+      newContentPath := fmt.Sprintf("%s%s/", contentDirPath, contentDirContent.Name())
+      newDestPath := fmt.Sprintf("%s%s/", destDirPath, contentDirContent.Name())
+      os.Mkdir(newDestPath, 0750)
+      generatePagesRecursive(newContentPath, templatePath, newDestPath)
+    } else {
+      fileName := filepath.Base(contentDirContent.Name())
+      fileExt := filepath.Ext(contentDirContent.Name())
+      fileName = fileName[:len(fileName)-len(filepath.Ext(fileName))]
+      if fileExt == ".md" {
+        htmlPage := fmt.Sprintf("%s.html", fileName)
+        newDestPath := fmt.Sprintf("%s%s", destDirPath, htmlPage)
+        contentFile := fmt.Sprintf("%s%s", contentDirPath, contentDirContent.Name())
+        generatePage(contentFile, templatePath, newDestPath)
+      }
+    }
+  }
+
+}
+
 func main() {
 	dirPtr := flag.String("dir", ".", "Directory to serve files from")
 	portPtr := flag.String("port", "8000", "Port to serve HTTP on")
@@ -170,6 +209,6 @@ func main() {
 	fmt.Println("Starting up server...")
 
 	copyStatic()
-  generatePage("/home/shobhit/repos/statgen/content/index.md", "/home/shobhit/repos/statgen/template/template.html", "/home/shobhit/repos/statgen/public/index.html")
+  generatePagesRecursive("/home/shobhit/repos/statgen/content/", "/home/shobhit/repos/statgen/template/template.html", "/home/shobhit/repos/statgen/public/")
 	server.Start(*dirPtr, *portPtr)
 }
