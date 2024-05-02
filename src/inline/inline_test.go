@@ -29,6 +29,28 @@ func TestSplitBoldDelimiter(t *testing.T) {
   }
 }
 
+func TestSplitBoldDelimiterWithNoTrails(t *testing.T) {
+  tn := &textnode.TextNode{Text: "This is a text with a **bold**", TextType: md.TEXT_TYPE_TEXT}
+
+  newNodes, err := SplitNodesDelimiter([]*textnode.TextNode{tn}, "**", md.TEXT_TYPE_BOLD)
+  if err != nil {
+    t.Errorf("%s", err.Error())
+  }
+  
+  expectedNodes := []*textnode.TextNode{
+    &textnode.TextNode{Text: "This is a text with a ", TextType: md.TEXT_TYPE_TEXT},
+    &textnode.TextNode{Text: "bold", TextType: md.TEXT_TYPE_BOLD},
+  }
+
+  for idx, node := range expectedNodes {
+    if node.IsEqual(newNodes[idx]) {
+      continue
+    } else {
+      t.Errorf("Nodes are not the same. Expected: %s, Got: %s", node.ToString(), newNodes[idx].ToString())
+    }
+  }
+}
+
 func TestSplitItalicDelimiter(t *testing.T) {
   tn := &textnode.TextNode{Text: "This is a text with a *italic* word", TextType: md.TEXT_TYPE_TEXT}
 
@@ -199,6 +221,68 @@ func TestTextToTextNodes(t *testing.T) {
     &textnode.TextNode{Text: "image", TextType: md.TEXT_TYPE_IMAGE, Url: "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"},
     &textnode.TextNode{Text: " and a ", TextType: md.TEXT_TYPE_TEXT},
     &textnode.TextNode{Text: "link", TextType: md.TEXT_TYPE_LINK, Url: "https://boot.dev"},
+  }
+
+  textNodes, err := TextToTextNodes(text)
+  if err != nil {
+    t.Errorf(err.Error())
+  }
+
+  for idx, node := range expected {
+    if node.IsEqual(textNodes[idx]) {
+      continue
+    } else {
+      t.Errorf("Text nodes are not the same. Expected: %s, Got: %s", node.ToString(), textNodes[idx].ToString())
+    }
+  }
+}
+
+
+func TestTextToTextNodesBoldWordTrail(t *testing.T) {
+  text := "A word **Test bold word**"
+  expected := []*textnode.TextNode{
+    &textnode.TextNode{Text: "A word ", TextType: md.TEXT_TYPE_TEXT},
+    &textnode.TextNode{Text: "Test bold word", TextType: md.TEXT_TYPE_BOLD},
+ }
+
+  textNodes, err := TextToTextNodes(text)
+  if err != nil {
+    t.Errorf(err.Error())
+  }
+
+  for idx, node := range expected {
+    if node.IsEqual(textNodes[idx]) {
+      continue
+    } else {
+      t.Errorf("Text nodes are not the same. Expected: %s, Got: %s", node.ToString(), textNodes[idx].ToString())
+    }
+  }
+}
+
+func TestTextToTextNodesOneItalicWord(t *testing.T) {
+  text := "*Test bold word*"
+  expected := []*textnode.TextNode{
+    &textnode.TextNode{Text: "Test bold word", TextType: md.TEXT_TYPE_ITALIC},
+  }
+
+  textNodes, err := TextToTextNodes(text)
+  if err != nil {
+    t.Errorf(err.Error())
+  }
+
+  for idx, node := range expected {
+    if node.IsEqual(textNodes[idx]) {
+      continue
+    } else {
+      t.Errorf("Text nodes are not the same. Expected: %s, Got: %s", node.ToString(), textNodes[idx].ToString())
+    }
+  }
+}
+
+func TestTextToTextNodesOneBoldWord(t *testing.T) {
+  text := "**Test bold word**"
+  expected := []*textnode.TextNode{
+    &textnode.TextNode{Text: "Test bold word", TextType: md.TEXT_TYPE_BOLD},
   }
 
   textNodes, err := TextToTextNodes(text)

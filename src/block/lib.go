@@ -17,8 +17,9 @@ const (
 )
 
 func CreateHTMLHeading(block string) (string, error) {
-	content := strings.SplitN(block, " ", 1)
+	content := strings.SplitN(block, " ", 2)
 	headingNumber := len(content[0])
+
 
 	textNodes, err := inline.TextToTextNodes(content[1])
 	if err != nil {
@@ -50,6 +51,7 @@ func CreateHTMLHeading(block string) (string, error) {
 }
 
 func CreateHTMLParagraph(block string) (string, error) {
+  
 	pValue := ""
 
 	textNodes, err := inline.TextToTextNodes(block)
@@ -133,7 +135,7 @@ func CreateHTMLOrderedList(block string) (string, error) {
   listItems := ""
 
 	for _, item := range items {
-		content := strings.SplitN(item, " ", 1)
+		content := strings.SplitN(item, " ", 2)
 		listValue := ""
 
 		textNodes, err := inline.TextToTextNodes(content[1])
@@ -157,9 +159,9 @@ func CreateHTMLOrderedList(block string) (string, error) {
 				return "", err
 			}
 			listValue += leafHTML
-      listItems += fmt.Sprintf("<li>%s</li>", listValue)
 		}
 
+    listItems += fmt.Sprintf("<li>%s</li>", listValue)
 	}
 
   ol := fmt.Sprintf("<ol>%s</ol>", listItems)
@@ -171,7 +173,7 @@ func CreateHTMLUnorderedList(block string) (string, error) {
   listItems := ""
 
 	for _, item := range items {
-		content := strings.SplitN(item, " ", 1)
+		content := strings.SplitN(item, " ", 2)
 		listValue := ""
 
 		textNodes, err := inline.TextToTextNodes(content[1])
@@ -195,11 +197,11 @@ func CreateHTMLUnorderedList(block string) (string, error) {
 				return "", err
 			}
 			listValue += leafHTML
-      listItems += fmt.Sprintf("<li>%s</li>", listValue)
 		}
 
+    listItems += fmt.Sprintf("<li>%s</li>", listValue)
 	}
 
-  ol := fmt.Sprintf("<ul>%s</ul>", listItems)
-  return ol, nil
+  ul := fmt.Sprintf("<ul>%s</ul>", listItems)
+  return ul, nil
 }

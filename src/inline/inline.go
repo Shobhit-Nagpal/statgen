@@ -23,7 +23,7 @@ func TextNodeToHTMLNode(tn *textnode.TextNode) (*htmlnode.LeafNode, error) {
 	case md.TEXT_TYPE_LINK:
 		return &htmlnode.LeafNode{htmlnode.HTMLNode{Tag: "a", Value: tn.Text, Props: map[string]string{"href": tn.Url}}}, nil
 	case md.TEXT_TYPE_IMAGE:
-		return &htmlnode.LeafNode{htmlnode.HTMLNode{Tag: "img", Props: map[string]string{"src": tn.Url, "alt": tn.Text}}}, nil
+		return &htmlnode.LeafNode{htmlnode.HTMLNode{Tag: "img", Value: "", Props: map[string]string{"src": tn.Url, "alt": tn.Text}}}, nil
 	default:
 		return nil, errors.New("Text Node type is not valid")
 	}
@@ -33,8 +33,14 @@ func SplitNodesDelimiter(oldNodes []*textnode.TextNode, delimiter, textType stri
 	textNodes := []*textnode.TextNode{}
 
 	for _, node := range oldNodes {
+
 		if node.TextType != md.TEXT_TYPE_TEXT {
 			textNodes = append(textNodes, node)
+			continue
+		}
+
+		if !strings.Contains(node.Text, delimiter) {
+			textNodes = append(textNodes, &textnode.TextNode{Text: node.Text, TextType: node.TextType})
 			continue
 		}
 
@@ -45,6 +51,11 @@ func SplitNodesDelimiter(oldNodes []*textnode.TextNode, delimiter, textType stri
 		}
 
 		for idx, str := range strs {
+
+			if str == "" {
+				continue
+			}
+
 			if idx%2 == 0 {
 				textNodes = append(textNodes, &textnode.TextNode{Text: str, TextType: md.TEXT_TYPE_TEXT})
 				continue
@@ -183,30 +194,31 @@ func SplitNodesLink(nodes []*textnode.TextNode) ([]*textnode.TextNode, error) {
 }
 
 func TextToTextNodes(text string) ([]*textnode.TextNode, error) {
-  newNodes, err := SplitNodesDelimiter([]*textnode.TextNode{&textnode.TextNode{Text: text, TextType: md.TEXT_TYPE_TEXT}}, "**", md.TEXT_TYPE_BOLD)
-  if err != nil {
-    return nil, err
-  }
 
+	newNodes, err := SplitNodesDelimiter([]*textnode.TextNode{&textnode.TextNode{Text: text, TextType: md.TEXT_TYPE_TEXT}}, "**", md.TEXT_TYPE_BOLD)
+	if err != nil {
+		return nil, err
+	}
 
-  newNodes, err = SplitNodesDelimiter(newNodes, "*", md.TEXT_TYPE_ITALIC)
-  if err != nil {
-    return nil, err
-  }
+	newNodes, err = SplitNodesDelimiter(newNodes, "*", md.TEXT_TYPE_ITALIC)
+	if err != nil {
+		return nil, err
+	}
 
-  newNodes, err = SplitNodesDelimiter(newNodes, "`", md.TEXT_TYPE_CODE)
-  if err != nil {
-    return nil, err
-  }
+	newNodes, err = SplitNodesDelimiter(newNodes, "```", md.TEXT_TYPE_CODE)
+	if err != nil {
+		return nil, err
+	}
 
-  newNodes, err = SplitNodesImage(newNodes)
-  if err != nil {
-    return nil, err
-  }
+	newNodes, err = SplitNodesImage(newNodes)
+	if err != nil {
+		return nil, err
+	}
 
-  newNodes, err = SplitNodesLink(newNodes)
-  if err != nil {
-    return nil, err
-  }
-  return newNodes, nil
+	newNodes, err = SplitNodesLink(newNodes)
+	if err != nil {
+		return nil, err
+	}
+
+	return newNodes, nil
 }

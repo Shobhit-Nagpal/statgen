@@ -1,6 +1,7 @@
 package htmlnode
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -127,14 +128,14 @@ func TestLeafNodeWithoutTag(t *testing.T) {
 
 func TestLeafNodeWithoutValue(t *testing.T) {
 	node := &LeafNode{HTMLNode{Tag: "a"}}
-	expected := "Leaf node does not have value"
+  expected := fmt.Sprintf("Leaf node %s does not have value. %s", node.Tag, node.ToString())
 
 	_, err := node.ToHTML()
 	if err.Error() == expected {
 		return
 	}
 
-	t.Errorf("Leaf node without Props does not give expected error. Expected: %s, Got: %s", expected, err.Error())
+	t.Errorf("Leaf node without Value does not give expected error. Expected: %s, Got: %s", expected, err.Error())
 }
 
 func TestParentNode(t *testing.T) {
