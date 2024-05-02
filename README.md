@@ -23,6 +23,12 @@ Make sure your Go environment is set up correctly.
 
 Here's a basic example of how to use Statgen:
 
+### Clone the repo
+```bash
+git clone git@github.com:Shobhit-Nagpal/statgen.git
+```
+
+### Run main shell script
 ```bash
 ./main.sh
 ```
