@@ -39,10 +39,10 @@ func SplitNodesDelimiter(oldNodes []*textnode.TextNode, delimiter, textType stri
 			continue
 		}
 
-		if !strings.Contains(node.Text, delimiter) {
-			textNodes = append(textNodes, &textnode.TextNode{Text: node.Text, TextType: node.TextType})
-			continue
-		}
+    if !strings.Contains(node.Text, delimiter) {
+      textNodes = append(textNodes, &textnode.TextNode{Text: node.Text, TextType: node.TextType, Url: node.Url})
+      continue
+    }
 
 		strs := strings.Split(node.Text, delimiter)
 
@@ -206,6 +206,11 @@ func TextToTextNodes(text string) ([]*textnode.TextNode, error) {
 	}
 
 	newNodes, err = SplitNodesDelimiter(newNodes, "```", md.TEXT_TYPE_CODE)
+	if err != nil {
+		return nil, err
+	}
+
+	newNodes, err = SplitNodesDelimiter(newNodes, "`", md.TEXT_TYPE_CODE)
 	if err != nil {
 		return nil, err
 	}
