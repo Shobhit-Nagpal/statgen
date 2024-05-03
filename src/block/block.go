@@ -25,6 +25,7 @@ func BlockToBlockType(block string) string {
 	ulRe := regexp.MustCompile(`(?m:^[*-]\s.*?$)`)
 	olRe := regexp.MustCompile(`(?m:^(1|[2-9]\d*)\.\s.*?$)`)
 	codeRe := regexp.MustCompile("^```[\\s\\S]*?```$")
+	tableRe := regexp.MustCompile(`(?m:^\|\s.*?\s\|\s.*?\s\|$)`)
 
 	if headingRe.MatchString(block) {
 		return BLOCK_TYPE_HEADING
@@ -36,6 +37,8 @@ func BlockToBlockType(block string) string {
 		return BLOCK_TYPE_ORDERED_LIST
 	} else if codeRe.MatchString(block) {
 		return BLOCK_TYPE_CODE
+	} else if tableRe.MatchString(block) {
+		return BLOCK_TYPE_TABLE
 	} else {
 		return BLOCK_TYPE_PARAGRAPH
 	}
@@ -91,6 +94,13 @@ func MarkdownToHTMLNode(markdown string) (string, error) {
 			}
 
 			html += ol
+		case BLOCK_TYPE_TABLE:
+			table, err := CreateHTMLTable(block)
+			if err != nil {
+				return "", err
+			}
+
+			html += table
 		default:
 			return "", errors.New("Block type not recognized")
 		}
