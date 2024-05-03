@@ -208,59 +208,58 @@ func CreateHTMLUnorderedList(block string) (string, error) {
 }
 
 func CreateHTMLTable(block string) (string, error) {
-  items := strings.Split(block, "\n")
+	items := strings.Split(block, "\n")
 
-  if (len(items) < 2) {
-    return "", errors.New("Table must have atleast two lines")
-  }
+	if len(items) < 2 {
+		return "", errors.New("Table must have atleast two lines")
+	}
 
-  if strings.HasPrefix(items[1], "| --") {
-    items = append(items[:1], items[1+1:]...)
-  }
+	if strings.HasPrefix(items[1], "|---") || strings.HasPrefix(items[1], "| --") {
+		items = append(items[:1], items[1+1:]...)
+	}
 
+	tableItems := ""
 
-  tableItems := ""
-
-  tableHeadings := items[0]
-  //Parse table heading here and append to tableItems
+	tableHeadings := items[0]
+	//Parse table heading here and append to tableItems
 	tableHeaders := strings.Split(tableHeadings, "|")
-  tableHeaders = tableHeaders[1:]
-  tableHeaders = tableHeaders[:len(tableHeaders)-1]
+	tableHeaders = tableHeaders[1:]
+	tableHeaders = tableHeaders[:len(tableHeaders)-1]
 
-  headers := ""
-  for _, tableHeader := range tableHeaders {
-    tableHeading, err := CreateHTMLHeading(fmt.Sprintf("### %s", strings.TrimSpace(tableHeader)))
-    if err != nil {
-      return "", err
-    }
+	headers := ""
+	for _, tableHeader := range tableHeaders {
+		tableHeading, err := CreateHTMLHeading(fmt.Sprintf("### %s", strings.TrimSpace(tableHeader)))
+		if err != nil {
+			return "", err
+		}
 
-    headers += fmt.Sprintf("<th>%s</th>", tableHeading)
-  }
+		headers += fmt.Sprintf("<th>%s</th>", tableHeading)
+	}
 
-  tableItems += fmt.Sprintf("<tr>%s</tr>", headers)
+	tableItems += fmt.Sprintf("<tr>%s</tr>", headers)
 
-  //Remove the table headings
-  items = items[1:]
+	//Remove the table headings
+	items = items[1:]
 
-  for _, tableRow := range items {
-    //Parse each table row here and append to table items
-    tableData := strings.Split(tableRow, "|")
-    tableData = tableData[1:]
-    tableData = tableData[:len(tableData)-1]
+	for _, tableRow := range items {
+		//Parse each table row here and append to table items
+		tableData := strings.Split(tableRow, "|")
+		tableData = tableData[1:]
+		tableData = tableData[:len(tableData)-1]
 
-    td  := ""
-    for _, data := range tableData {
-      tableDataItem, err := CreateHTMLParagraph(strings.TrimSpace(data))
-      if err != nil {
-        return "", err
-      }
+		td := ""
+		for _, data := range tableData {
+			tableDataItem, err := CreateHTMLParagraph(strings.TrimSpace(data))
+			if err != nil {
+				return "", err
+			}
 
-      td += fmt.Sprintf("<td>%s</td>", tableDataItem)
-    }
+			td += fmt.Sprintf("<td>%s</td>", tableDataItem)
+		}
 
-    tableItems += fmt.Sprintf("<tr>%s</tr>", td)
-  }
+		tableItems += fmt.Sprintf("<tr>%s</tr>", td)
+	}
 
-  table := fmt.Sprintf("<table>%s</table>", tableItems)
-  return table, nil
+	table := fmt.Sprintf("<table>%s</table>", tableItems)
+	return table, nil
 }
