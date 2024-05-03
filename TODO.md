@@ -2,6 +2,6 @@
 
 ## Features
 
-- [ ] Add parsing of tables
+- [x] Add parsing of tables
 - [ ] Add parsing of todo list
 - [ ] Listen for changes over `content` directory
