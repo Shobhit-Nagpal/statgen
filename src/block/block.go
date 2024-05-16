@@ -105,7 +105,7 @@ func MarkdownToHTMLNode(markdown string) (string, error) {
 
 			html += table
 		case BLOCK_TYPE_HR:
-			hr, err := CreateHTMLHr(block)
+			hr, err := CreateHTMLHr()
 			if err != nil {
 				return "", err
 			}

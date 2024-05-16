@@ -265,6 +265,6 @@ func CreateHTMLTable(block string) (string, error) {
 	return table, nil
 }
 
-func CreateHTMLHr(block string) (string, error) {
+func CreateHTMLHr() (string, error) {
   return fmt.Sprintf("<hr></hr>"), nil
 }
