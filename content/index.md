@@ -4,6 +4,8 @@ Welcome to the Tolkien Fan Club! Whether you're a seasoned loremaster or just be
 
 Read my [first post here](/majesty) to dive into the world of Middle-earth.
 
+---
+
 ## Members
 
 | Username       | Role           | Favorite Character |

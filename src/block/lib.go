@@ -16,6 +16,7 @@ const (
 	BLOCK_TYPE_UNORDERED_LIST = "unordered_list"
 	BLOCK_TYPE_ORDERED_LIST   = "ordered_list"
 	BLOCK_TYPE_TABLE          = "table"
+	BLOCK_TYPE_HR             = "hr"
 )
 
 func CreateHTMLHeading(block string) (string, error) {
@@ -262,4 +263,8 @@ func CreateHTMLTable(block string) (string, error) {
 
 	table := fmt.Sprintf("<table>%s</table>", tableItems)
 	return table, nil
+}
+
+func CreateHTMLHr(block string) (string, error) {
+  return fmt.Sprintf("<hr></hr>"), nil
 }

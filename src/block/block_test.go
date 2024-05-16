@@ -141,3 +141,15 @@ func TestBlockToBlockTypeCode(t *testing.T) {
 
   t.Errorf("Block type not same. Expected: %s, Got: %s", BLOCK_TYPE_CODE, blockType)
 }
+
+func TestBlockToBlockTypeHr(t *testing.T) {
+  text := "---"
+
+  blockType := BlockToBlockType(text)
+
+  if blockType == BLOCK_TYPE_HR {
+    return
+  }
+
+  t.Errorf("Block type not same. Expected: %s, Got: %s", BLOCK_TYPE_CODE, blockType)
+}
